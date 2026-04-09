@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo | IFSCome & Bebe</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --soft-red: #f8d7da;
+            --accent-red: #e35d5d;
+            --dark-red: #c0392b;
+            --white: #ffffff;
+            --text: #2c3e50;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--soft-red);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            color: var(--dark-red);
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            color: var(--dark-text);
+            opacity: 0.7;
+        }
+
+        .menu-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        .nav-card {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid transparent;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-red);
+            box-shadow: 0 15px 30px rgba(192, 57, 43, 0.15);
+        }
+
+        .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .nav-card h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .nav-card p {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 8px;
+        }
+
+        .footer-info {
+            margin-top: 50px;
+            font-size: 0.8rem;
+            color: var(--dark-red);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🍔 IFSCome & Bebe</h1>
+        <p>Painel de Gestão do Restaurante</p>
+    </header>
+
+    <nav class="menu-container">
+        <a href="novo-prato.html" class="nav-card">
+            <div class="icon">➕</div>
+            <h3>Novo Item</h3>
+            <p>Cadastrar prato no banco</p>
+        </a>
+
+        <a href="cardapio.html" class="nav-card">
+            <div class="icon">📖</div>
+            <h3>Ver Cardápio</h3>
+            <p>Consultar itens ativos</p>
+        </a>
+
+        <a href="#" class="nav-card" style="opacity: 0.6; cursor: not-allowed;">
+            <div class="icon">📦</div>
+            <h3>Pedidos</h3>
+            <p>Em breve...</p>
+        </a>
+    </nav>
+
+    <div class="footer-info">Sistema Acadêmico - IFSC 2026</div>
+
+</body>
+</html>

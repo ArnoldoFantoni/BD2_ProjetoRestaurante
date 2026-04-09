@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar ao Cardápio</title>
+    <style>
+        /* Importando fonte moderna */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --soft-red: #f8d7da; /* Vermelho fraco para fundo */
+            --accent-red: #e35d5d; /* Vermelho moderno para botões */
+            --dark-text: #444;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--soft-red);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--accent-red);
+            font-weight: 600;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--dark-text);
+            font-weight: 400;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box; /* Garante que o padding não aumente o tamanho */
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-red);
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--accent-red);
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #cf4d4d;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #888;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <a href="menu.html" class="back-link">← Voltar para o Painel Inicial</a>
+
+    <div class="card">
+        <h2>Novo Item no Cardápio</h2>
+        
+        <form id="formPrato">
+            <div class="form-group">
+                <label for="nome">Nome do Prato</label>
+                <input type="text" id="nome" placeholder="Ex: Risoto de Alho Poró" required>
+            </div>
+
+            <div class="form-group">
+                <label for="tipo">Categoria</label>
+                <select id="tipo">
+                    <option value="entrada">Entrada</option>
+                    <option value="principal">Prato Principal</option>
+                    <option value="sobremesa">Sobremesa</option>
+                    <option value="bebida">Bebida</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="preco">Preço (R$)</label>
+                <input type="number" id="preco" step="0.01" placeholder="0,00" required>
+            </div>
+
+            <div class="form-group">
+                <label for="descricao">Descrição Curta</label>
+                <textarea id="descricao" rows="3" placeholder="Ingredientes ou detalhes..."></textarea>
+            </div>
+
+            <button type="submit">Cadastrar Prato</button>
+        </form>
+
+        <a href="#" class="back-link">← Voltar ao Dashboard</a>
+    </div>
+
+    <script>
+        // Esta parte será conectada ao seu server.js depois
+        document.getElementById('formPrato').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Impede a página de recarregar
+
+            // 1. Captura os valores dos campos do formulário
+            const pratoData = {
+                nome: document.getElementById('nome').value,
+                tipo: document.getElementById('tipo').value,
+                preco: parseFloat(document.getElementById('preco').value),
+                descricao: document.getElementById('descricao').value
+            };
+
+            try {
+                // 2. Faz a chamada para o servidor Node.js
+                const response = await fetch('http://localhost:3000/cardapio', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(pratoData) // Transforma o objeto em texto JSON
+                });
+
+                const resultado = await response.json();
+
+                // 3. Verifica se deu certo
+                if (response.ok) {
+                    alert('✅ Prato cadastrado com sucesso no MongoDB!');
+                    document.getElementById('formPrato').reset(); // Limpa o formulário
+                } else {
+                    alert('❌ Erro ao cadastrar: ' + resultado.erro);
+                }
+
+            } catch (erro) {
+                console.error('Erro na requisição:', erro);
+                alert('❌ Não foi possível conectar ao servidor. Verifique se o server.js está rodando.');
+            }
+        });
+    </script>
+
+</body>
+</html>

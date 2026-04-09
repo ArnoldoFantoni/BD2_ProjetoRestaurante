@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu | IFSCome & Bebe</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --soft-red: #f8d7da;
+            --accent-red: #e35d5d;
+            --dark-red: #c0392b;
+            --white: #ffffff;
+            --text: #2c3e50;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fafafa;
+            margin: 0;
+            color: var(--text);
+        }
+
+        /* Cabeçalho */
+        header {
+            background-color: var(--white);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--accent-red);
+        }
+
+        header h1 {
+            margin: 0;
+            color: var(--dark-red);
+            font-size: 2.5rem;
+            letter-spacing: -1px;
+        }
+
+        header p {
+            margin-top: 10px;
+            color: #888;
+            font-style: italic;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Grid do Cardápio */
+        .cardapio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* Estilo do Card do Prato */
+        .item-card {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+            border-top: 5px solid var(--soft-red);
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+            border-top-color: var(--accent-red);
+        }
+
+        .category-badge {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            background: var(--soft-red);
+            color: var(--dark-red);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .item-card h3 {
+            margin: 15px 0 10px 0;
+            font-size: 1.3rem;
+        }
+
+        .item-card p {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+            min-height: 40px;
+        }
+
+        .price-tag {
+            display: block;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent-red);
+        }
+
+        .btn-refresh {
+            display: block;
+            margin: 0 auto 30px;
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+    </style>
+</head>
+<body>
+    <a href="menu.html" style="text-decoration:none; color: #e35d5d;">← Voltar ao Início</a>
+    <header>
+        <h1>🍴 IFSCome & Bebe</h1>
+        <p>O melhor tempero da vida acadêmica</p>
+    </header>
+
+    <div class="container">
+        <button class="btn-refresh" onclick="buscarCardapio()">Atualizar Cardápio</button>
+        
+        <div class="cardapio-grid" id="menuContainer">
+            </div>
+    </div>
+
+    <script>
+        async function buscarCardapio() {
+            try {
+                // Rota que criamos no server.js
+                const response = await fetch('http://localhost:3000/cardapio-completo');
+                const pratos = await response.json();
+
+                const container = document.getElementById('menuContainer');
+                container.innerHTML = ""; // Limpa antes de carregar
+
+                pratos.forEach(prato => {
+                    const card = `
+                        <div class="item-card">
+                            <span class="category-badge">${prato.tipo}</span>
+                            <h3>${prato.nome}</h3>
+                            <p>${prato.descricao || 'Sem descrição disponível.'}</p>
+                            <span class="price-tag">R$ ${parseFloat(prato.preco).toFixed(2)}</span>
+                        </div>
+                    `;
+                    container.innerHTML += card;
+                });
+
+            } catch (error) {
+                console.error("Erro ao carregar cardápio:", error);
+            }
+        }
+
+        // Carrega ao abrir a página
+        buscarCardapio();
+    </script>
+
+</body>
+</html>
