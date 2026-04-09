@@ -13,7 +13,6 @@ const dbName = "restaurante"; // O nome do banco
 async function main() {
     try {
         await client.connect();
-        console.log("✅ Servidor conectado ao MongoDB");
         const db = client.db(dbName);
         const clientes = db.collection('cliente');
 
