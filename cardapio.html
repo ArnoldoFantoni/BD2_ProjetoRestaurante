@@ -102,8 +102,6 @@
         }
 
         .btn-refresh {
-            display: block;
-            margin: 0 auto 30px;
             background: var(--accent-red);
             color: white;
             border: none;
@@ -112,6 +110,25 @@
             cursor: pointer;
             font-family: inherit;
         }
+        .actions-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin: 0 auto 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-family: inherit;
+            min-width: 220px;
+            background: white;
+        }
+
+        
     </style>
 </head>
 <body>
@@ -122,21 +139,41 @@
     </header>
 
     <div class="container">
+    <div class="actions-bar">
         <button class="btn-refresh" onclick="buscarCardapio()">Atualizar Cardápio</button>
-        
-        <div class="cardapio-grid" id="menuContainer">
-            </div>
+
+        <select id="filtroTipo" class="filter-select" onchange="filtrarPorTipo()">
+            <option value="">Todas as categorias</option>
+            <option value="entrada">Entrada</option>
+            <option value="principal">Prato Principal</option>
+            <option value="sobremesa">Sobremesa</option>
+            <option value="bebida">Bebida</option>
+        </select>
     </div>
+    
+    <div class="cardapio-grid" id="menuContainer">
+    </div>
+</div>
 
     <script>
         async function buscarCardapio() {
             try {
-                // Rota que criamos no server.js
-                const response = await fetch('http://localhost:3000/cardapio-completo');
+                const tipoSelecionado = document.getElementById('filtroTipo').value;
+
+                const rota = tipoSelecionado
+                    ? `http://localhost:3000/cardapio-completo?tipo=${encodeURIComponent(tipoSelecionado)}`
+                    : 'http://localhost:3000/cardapio-completo';
+
+                const response = await fetch(rota);
                 const pratos = await response.json();
 
                 const container = document.getElementById('menuContainer');
-                container.innerHTML = ""; // Limpa antes de carregar
+                container.innerHTML = "";
+
+                if (pratos.length === 0) {
+                    container.innerHTML = '<p>Nenhum prato encontrado para a categoria selecionada.</p>';
+                    return;
+                }
 
                 pratos.forEach(prato => {
                     const card = `
@@ -155,7 +192,10 @@
             }
         }
 
-        // Carrega ao abrir a página
+        function filtrarPorTipo() {
+            buscarCardapio();
+        }
+
         buscarCardapio();
     </script>
 

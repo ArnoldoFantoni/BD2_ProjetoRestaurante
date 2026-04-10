@@ -38,10 +38,10 @@ async function main() {
         app.post('/cardapio', async (req, res) => {
             try {
                 const novoItem = req.body; // Pega os dados enviados pelo fetch
-                
+
                 // Comando do MongoDB para inserir um documento
                 const result = await cardapio.insertOne(novoItem);
-                
+
                 res.status(201).json(result);
             } catch (err) {
                 res.status(500).json({ erro: "Erro ao inserir no cardápio" });
@@ -49,9 +49,15 @@ async function main() {
         });
 
         //-- Apresentar o cardápio
-        app.get('/cardapio-completo', async (req, res) => {
+       app.get('/cardapio-completo', async (req, res) => {
             try {
-                const itens = await db.collection('cardapio').find().toArray();
+                const filtro = {};
+            
+                if (req.query.tipo) {
+                    filtro.tipo = req.query.tipo;
+                }
+            
+                const itens = await db.collection('cardapio').find(filtro).toArray();
                 res.json(itens);
             } catch (err) {
                 res.status(500).json({ erro: "Erro ao buscar cardápio" });

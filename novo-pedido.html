@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Pedido | IFSCome & Bebe</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --soft-red: #f8d7da;
+            --accent-red: #e35d5d;
+            --dark-red: #c0392b;
+            --white: #ffffff;
+            --text: #2c3e50;
+            --muted: #7f8c8d;
+            --border: #f0d3d6;
+            --success-bg: #d4edda;
+            --success-text: #155724;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fafafa;
+            margin: 0;
+            color: var(--text);
+        }
+
+        .top-link {
+            display: inline-block;
+            margin: 20px 20px 0;
+            text-decoration: none;
+            color: var(--accent-red);
+            font-weight: 600;
+        }
+
+        header {
+            background-color: var(--white);
+            padding: 35px 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--accent-red);
+        }
+
+        header h1 {
+            margin: 0;
+            color: var(--dark-red);
+            font-size: 2.3rem;
+            letter-spacing: -1px;
+        }
+
+        header p {
+            margin-top: 10px;
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 35px auto;
+            padding: 0 20px 40px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            border-top: 5px solid var(--soft-red);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: var(--dark-red);
+            font-size: 1.5rem;
+        }
+
+        .card p {
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-red);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 110px;
+        }
+
+        .acoes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        button, .btn-secondary {
+            border: none;
+            border-radius: 10px;
+            padding: 12px 18px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        button:hover, .btn-secondary:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+
+        .btn-primary {
+            background: var(--accent-red);
+            color: var(--white);
+        }
+
+        .btn-secondary {
+            background: #fff4f4;
+            color: var(--dark-red);
+            border: 1px solid var(--border);
+        }
+
+        .mensagem {
+            margin-top: 18px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            display: none;
+            font-weight: 600;
+        }
+
+        .mensagem.sucesso {
+            display: block;
+            background: var(--success-bg);
+            color: var(--success-text);
+        }
+
+        .mensagem.erro {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 700px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="pedidos.html" class="top-link">&larr; Voltar para Pedidos</a>
+
+    <header>
+        <h1>Novo Pedido</h1>
+    </header>
+
+    <div class="container">
+        <section class="card">
+            <h2>Cadastro do Pedido</h2>
+
+            <form id="formNovoPedido" class="form-grid">
+                <div>
+                    <label for="idPedido">ID do Pedido</label>
+                    <input type="text" id="idPedido" placeholder="Ex: PED001" required>
+                </div>
+
+                <div>
+                    <label for="cliente">Nome do Cliente</label>
+                    <input type="text" id="cliente" required>
+                </div>
+
+                <div>
+                    <label for="mesa">Mesa</label>
+                    <input type="text" id="mesa" placeholder="Ex: 07">
+                </div>
+
+                <div>
+                    <label for="status">Status do Pedido</label>
+                    <select id="status" required>
+                        <option value="em preparo">Em preparo</option>
+                        <option value="finalizado">Finalizado</option>
+                        <option value="entregue">Entregue</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="dataPedido">Data do Pedido</label>
+                    <input type="date" id="dataPedido" required>
+                </div>
+
+                <div>
+                    <label for="total">Total do Pedido (R$)</label>
+                    <input type="number" id="total" step="0.01" min="0" placeholder="0.00" required>
+                </div>
+
+                <div class="full-width">
+                    <label for="itens">Itens do Pedido</label>
+                    <textarea id="itens" placeholder="Ex: 2x Hamburguer, 1x Suco de Laranja" required></textarea>
+                </div>
+
+                <div class="full-width">
+                    <label for="observacoes">Observacoes</label>
+                    <textarea id="observacoes" placeholder="Ex: sem cebola, entregar primeiro a bebida"></textarea>
+                </div>
+
+                <div class="full-width acoes">
+                    <button type="submit" class="btn-primary">Salvar Pedido</button>
+                    <a href="pedidos.html" class="btn-secondary">Cancelar</a>
+                </div>
+            </form>
+
+            <div id="mensagem" class="mensagem"></div>
+        </section>
+    </div>
+
+    <script>
+        document.getElementById('dataPedido').value = new Date().toISOString().split('T')[0];
+
+        document.getElementById('formNovoPedido').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const pedidoData = {
+                idPedido: document.getElementById('idPedido').value.trim(),
+                cliente: document.getElementById('cliente').value.trim(),
+                mesa: document.getElementById('mesa').value.trim(),
+                status: document.getElementById('status').value,
+                dataPedido: document.getElementById('dataPedido').value,
+                itens: document.getElementById('itens').value.trim(),
+                observacoes: document.getElementById('observacoes').value.trim(),
+                total: parseFloat(document.getElementById('total').value)
+            };
+
+            const mensagem = document.getElementById('mensagem');
+
+            try {
+                const response = await fetch('http://localhost:3000/pedidos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(pedidoData)
+                });
+
+                const resultado = await response.json();
+
+                if (response.ok) {
+                    mensagem.className = 'mensagem sucesso';
+                    mensagem.textContent = 'Pedido cadastrado com sucesso no MongoDB.';
+                    document.getElementById('formNovoPedido').reset();
+                    document.getElementById('dataPedido').value = new Date().toISOString().split('T')[0];
+                } else {
+                    mensagem.className = 'mensagem erro';
+                    mensagem.textContent = resultado.erro || 'Nao foi possivel cadastrar o pedido.';
+                }
+            } catch (erro) {
+                mensagem.className = 'mensagem erro';
+                mensagem.textContent = 'Erro ao conectar com o servidor. Verifique se o server.js esta rodando.';
+                console.error('Erro ao salvar pedido:', erro);
+            }
+        });
+    </script>
+</body>
+</html>
