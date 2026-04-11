@@ -15,9 +15,14 @@ async function main() {
     try {
         await client.connect();
         const db = client.db(dbName);
-        const clientes = db.collection('cliente');
 
-        // Rota principal para listar clientes
+        //inserts
+        const clientes = db.collection('cliente');
+        const cardapio = db.collection('cardapio');
+        const pedidos = db.collection('pedidos');
+
+
+        // ROTA LISTAR CLIENTES
         app.get('/clientes', async (req, res) => {
             try {
                 const dados = await clientes.find().toArray();
@@ -27,14 +32,8 @@ async function main() {
             }
         });
 
-        app.listen(3000, () => {
-            console.log("🚀 Servidor rodando em http://localhost:3000");
-        });
 
-        //-- Insert do cardápio
-        const cardapio = db.collection('cardapio');
-
-        // Rota para Inserir (INSERT)
+        // ROTA INSERT CARDAPIO
         app.post('/cardapio', async (req, res) => {
             try {
                 const novoItem = req.body; // Pega os dados enviados pelo fetch
@@ -48,7 +47,7 @@ async function main() {
             }
         });
 
-        //-- Apresentar o cardápio
+        //ROTA LISTAR CARDAPIO
        app.get('/cardapio-completo', async (req, res) => {
             try {
                 const filtro = {};
@@ -62,6 +61,25 @@ async function main() {
             } catch (err) {
                 res.status(500).json({ erro: "Erro ao buscar cardápio" });
             }
+        });
+
+        //ROTA INSERT PEDIDOS
+        app.post('/pedidos', async (req, res) => {
+            try {
+                const novoPedido = req.body; // Pega os dados enviados pelo fetch
+
+                // Comando do MongoDB para inserir um documento
+                const result = await pedidos.insertOne(novoPedido);
+
+                res.status(201).json(result);
+            } catch (err) {
+                res.status(500).json({ erro: "Erro ao inserir pedido" });
+            }
+        });
+
+        
+        app.listen(3000, () => {
+            console.log("🚀 Servidor rodando em http://localhost:3000");
         });
 
     } catch (e) {
