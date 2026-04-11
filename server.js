@@ -77,6 +77,15 @@ async function main() {
             }
         });
 
+        app.get('/pedidos', async (req, res) => {
+            try {
+                const dados = await pedidos.find().toArray();
+                res.json(dados);
+            } catch (err) {
+                res.status(500).json({ erro: "Erro ao buscar pedidos" });
+            }
+        });
+
         
         app.listen(3000, () => {
             console.log("🚀 Servidor rodando em http://localhost:3000");

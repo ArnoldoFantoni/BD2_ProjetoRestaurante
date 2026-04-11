@@ -302,15 +302,15 @@
                 <div class="resumo-boxes">
                     <div class="resumo-item">
                         <span>Pedidos Hoje</span>
-                        <strong>12</strong>
+                        <strong id="resumoPedidosHoje">0</strong>
                     </div>
                     <div class="resumo-item">
                         <span>Em Preparo</span>
-                        <strong>5</strong>
+                        <strong id="resumoEmPreparo">0</strong>
                     </div>
                     <div class="resumo-item">
                         <span>Faturamento</span>
-                        <strong>R$ 486,40</strong>
+                        <strong id="resumoFaturamento">R$ 0,00</strong>
                     </div>
                 </div>
 
@@ -331,30 +331,7 @@
                                 <th>Total</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <!--estes tem que vir do pedido que eu realizei em novo pedido-->
-                                <td>#001</td>
-                                <td>Ana Souza</td>
-                                <td><span class="status-badge status-preparo">em preparo</span></td>
-                                <td>2x Hambúrguer, 1x Suco</td>
-                                <td>R$ 58,00</td>
-                            </tr>
-                            <tr>
-                                <td>#002</td>
-                                <td>Lucas Lima</td>
-                                <td><span class="status-badge status-finalizado">finalizado</span></td>
-                                <td>1x Risoto, 1x Sobremesa</td>
-                                <td>R$ 74,90</td>
-                            </tr>
-                            <tr>
-                                <td>#003</td>
-                                <td>Marina Costa</td>
-                                <td><span class="status-badge status-entregue">entregue</span></td>
-                                <td>3x Pizza Broto, 2x Refrigerante</td>
-                                <td>R$ 102,50</td>
-                            </tr>
-                        </tbody>
+                        <tbody id="corpoTabelaPedidos"></tbody>       
                     </table>
                 </div>
             </section>
@@ -402,40 +379,136 @@
         <section class="card" style="margin-top: 25px;">
             <h2>Total de Pedidos por Cliente</h2>
 
-            <div class="cliente-total-lista" id="listaTotais">
-                <div class="cliente-total-item">
-                    <span>nome cliente</span>
-                    <strong>qtd</strong>
-                </div>
-                <div class="cliente-total-item">
-                    <span>nome cliente</span>
-                    <strong>qtd</strong>
-                </div>
-                <div class="cliente-total-item">
-                    <span>nome cliente</span>
-                    <strong>qtd</strong>
-                </div>
-            </div>
+            <div class="cliente-total-lista" id="listaTotais"></div>
+
         </section>
     </div>
 
     <script>
-        function carregarPedidos() {
-            alert('A interface de pedidos está pronta. Depois vocês podem conectar esta ação ao backend para buscar os pedidos reais do MongoDB.');
+        function obterDataHojeLocal() {
+            const hoje = new Date();
+            const ano = hoje.getFullYear();
+            const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+            const dia = String(hoje.getDate()).padStart(2, '0');
+            return `${ano}-${mes}-${dia}`;
         }
 
-        function preencherExemplo() {
-            document.getElementById('pedidoId').value = '002';
-            document.getElementById('cliente').value = 'Lucas Lima';
-            document.getElementById('status').value = 'finalizado';
-            document.getElementById('itens').value = '1x Risoto de Cogumelos, 1x Mousse de Chocolate';
-            document.getElementById('total').value = '74.90';
+        function atualizarResumo(pedidos) {
+            const hoje = obterDataHojeLocal();
+
+            const pedidosHoje = pedidos.filter(pedido => pedido.dataPedido === hoje).length;
+            const emPreparo = pedidos.filter(pedido => pedido.status === 'em preparo').length;
+            const faturamento = pedidos.reduce((soma, pedido) => soma + Number(pedido.total || 0), 0);
+
+            document.getElementById('resumoPedidosHoje').textContent = pedidosHoje;
+            document.getElementById('resumoEmPreparo').textContent = emPreparo;
+            document.getElementById('resumoFaturamento').textContent =
+                `R$ ${faturamento.toFixed(2).replace('.', ',')}`;
         }
 
-        document.getElementById('formPedido').addEventListener('submit', function(event) {
+        function atualizarTotaisPorCliente(pedidos) {
+            const listaTotais = document.getElementById('listaTotais');
+            const totaisPorCliente = {};
+
+            pedidos.forEach(pedido => {
+                const nomeCliente = pedido.cliente || 'Cliente sem nome';
+                const valorPedido = Number(pedido.total || 0);
+            
+                if (!totaisPorCliente[nomeCliente]) {
+                    totaisPorCliente[nomeCliente] = 0;
+                }
+            
+                totaisPorCliente[nomeCliente] += valorPedido;
+            });
+        
+            const clientesOrdenados = Object.entries(totaisPorCliente)
+                .sort((a, b) => b[1] - a[1]);
+        
+            listaTotais.innerHTML = '';
+        
+            if (clientesOrdenados.length === 0) {
+                listaTotais.innerHTML = `
+                    <div class="cliente-total-item">
+                        <span>Nenhum cliente encontrado</span>
+                        <strong>R$ 0,00</strong>
+                    </div>
+                `;
+                return;
+            }
+
+            clientesOrdenados.forEach(([cliente, total]) => {
+                const item = document.createElement('div');
+                item.className = 'cliente-total-item';
+                item.innerHTML = `
+                    <span>${cliente}</span>
+                    <strong>R$ ${total.toFixed(2).replace('.', ',')}</strong>
+                `;
+                listaTotais.appendChild(item);
+            });
+        }
+
+        async function carregarPedidos() {
+            const corpoTabela = document.getElementById('corpoTabelaPedidos');
+
+            try {
+                const response = await fetch('http://localhost:3000/pedidos');
+                const pedidos = await response.json();
+
+                corpoTabela.innerHTML = '';
+
+                if (!response.ok) {
+                    throw new Error(pedidos.erro || 'Erro ao buscar pedidos.');
+                }
+
+                atualizarResumo(pedidos);
+                atualizarTotaisPorCliente(pedidos);
+
+
+                if (pedidos.length === 0) {
+                    corpoTabela.innerHTML = `
+                        <tr>
+                            <td colspan="5">Nenhum pedido cadastrado ainda.</td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                pedidos.forEach(pedido => {
+                    let classeStatus = 'status-preparo';
+
+                    if (pedido.status === 'finalizado') {
+                        classeStatus = 'status-finalizado';
+                    } else if (pedido.status === 'entregue') {
+                        classeStatus = 'status-entregue';
+                    }
+
+                    const linha = document.createElement('tr');
+                    linha.innerHTML = `
+                        <td>${pedido.idPedido || '-'}</td>
+                        <td>${pedido.cliente || '-'}</td>
+                        <td><span class="status-badge ${classeStatus}">${pedido.status || '-'}</span></td>
+                        <td>${pedido.itens || '-'}</td>
+                        <td>R$ ${Number(pedido.total || 0).toFixed(2)}</td>
+                    `;
+
+                    corpoTabela.appendChild(linha);
+                });
+            } catch (erro) {
+                console.error('Erro ao carregar pedidos:', erro);
+                corpoTabela.innerHTML = `
+                    <tr>
+                        <td colspan="5">Erro ao carregar pedidos do banco de dados.</td>
+                    </tr>
+                `;
+            }
+        }
+
+        function preencherExemplo(event) {
             event.preventDefault();
-            alert('Tela preparada para replace de pedido. Quando vocês quiserem, eu posso conectar este formulário ao server.js.');
-        });
+            alert('Tela preparada para replace de pedido. Quando voces quiserem, eu posso conectar este formulario ao server.js.');
+        };
+
+        carregarPedidos();
     </script>
 </body>
 </html>
