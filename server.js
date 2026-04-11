@@ -63,6 +63,52 @@ async function main() {
             }
         });
 
+        app.get('/pedidos/:id', async (req, res) => {
+            try {
+                const pedido = await pedidos.findOne({ idPedido: req.params.id });
+
+                if (!pedido) {
+                    return res.status(404).json({ erro: "Pedido nao encontrado" });
+                }
+
+                res.json(pedido);
+            } catch (err) {
+                res.status(500).json({ erro: "Erro ao buscar pedido" });
+            }
+        });
+
+        app.put('/pedidos/:id', async (req, res) => {
+            try {
+                const pedidoAtualizado = {
+                    idPedido: req.params.id,
+                    cliente: req.body.cliente,
+                    mesa: req.body.mesa || "",
+                    status: req.body.status,
+                    dataPedido: req.body.dataPedido || "",
+                    itens: req.body.itens,
+                    observacoes: req.body.observacoes || "",
+                    total: Number(req.body.total)
+                };
+
+                if (!pedidoAtualizado.cliente || !pedidoAtualizado.status || !pedidoAtualizado.itens || Number.isNaN(pedidoAtualizado.total)) {
+                    return res.status(400).json({ erro: "Preencha os campos obrigatorios do pedido." });
+                }
+
+                const result = await pedidos.replaceOne(
+                    { idPedido: req.params.id },
+                    pedidoAtualizado
+                );
+
+                if (result.matchedCount === 0) {
+                    return res.status(404).json({ erro: "Pedido nao encontrado" });
+                }
+
+                res.json({ mensagem: "Pedido alterado com sucesso." });
+            } catch (err) {
+                res.status(500).json({ erro: "Erro ao alterar pedido" });
+            }
+        });
+
         //ROTA INSERT PEDIDOS
         app.post('/pedidos', async (req, res) => {
             try {
@@ -85,6 +131,41 @@ async function main() {
                 res.status(500).json({ erro: "Erro ao buscar pedidos" });
             }
         });
+
+        app.get('/pedidos-total-por-cliente', async (req, res) => {
+            try {
+                const totais = await pedidos.aggregate([
+                    {
+                        $group: {
+                            _id: '$cliente',
+                            totalGasto: { $sum: { $toDouble: '$total' } }
+                        }
+                    },
+                    {
+                        $sort: { totalGasto: -1 }
+                    }
+                ]).toArray();
+            
+                res.json(totais);
+            } catch (err) {
+                res.status(500).json({ erro: "Erro ao calcular total por cliente" });
+            }
+        });     
+
+         app.delete('/pedidos/:id', async (req, res) => {
+            try {
+                const result = await pedidos.deleteOne({ idPedido: req.params.id });
+
+                if (result.deletedCount === 0) {
+                    return res.status(404).json({ erro: "Pedido nao encontrado" });
+                }
+
+                res.json({ mensagem: "Pedido excluido com sucesso." });
+            } catch (err) {
+                res.status(500).json({ erro: "Erro ao excluir pedido" });
+            }
+        });
+
 
         
         app.listen(3000, () => {

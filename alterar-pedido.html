@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alterar Pedido | IFSCome & Bebe</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --soft-red: #f8d7da;
+            --accent-red: #e35d5d;
+            --dark-red: #c0392b;
+            --white: #ffffff;
+            --text: #2c3e50;
+            --muted: #7f8c8d;
+            --border: #f0d3d6;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fafafa;
+            margin: 0;
+            color: var(--text);
+        }
+
+        .top-link {
+            display: inline-block;
+            margin: 20px 20px 0;
+            text-decoration: none;
+            color: var(--accent-red);
+            font-weight: 600;
+        }
+
+        header {
+            background-color: var(--white);
+            padding: 35px 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--accent-red);
+        }
+
+        header h1 {
+            margin: 0;
+            color: var(--dark-red);
+            font-size: 2.3rem;
+        }
+
+
+        .container {
+            max-width: 900px;
+            margin: 35px auto;
+            padding: 0 20px 40px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            border-top: 5px solid var(--soft-red);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .acoes {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 18px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--accent-red);
+            color: var(--white);
+        }
+
+        .btn-secondary {
+            background: #fff4f4;
+            color: var(--dark-red);
+            border: 1px solid var(--border);
+        }
+
+        .mensagem {
+            margin-top: 18px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            display: none;
+            font-weight: 600;
+        }
+
+        .mensagem.sucesso {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .mensagem.erro {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 700px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="pedidos.html" class="top-link">&larr; Voltar para Pedidos</a>
+
+    <header>
+        <h1>Alterar Pedido</h1>
+    </header>
+
+    <div class="container">
+        <section class="card">
+            <form id="formAlterarPedido" class="form-grid">
+                <div>
+                    <label for="pedidoId">ID do Pedido</label>
+                    <input type="text" id="pedidoId" readonly>
+                </div>
+
+                <div>
+                    <label for="cliente">Cliente</label>
+                    <input type="text" id="cliente" placeholder="Nome do cliente">
+                </div>
+
+                <div>
+                    <label for="status">Status</label>
+                    <select id="status">
+                        <option value="em preparo">Em preparo</option>
+                        <option value="finalizado">Finalizado</option>
+                        <option value="entregue">Entregue</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="total">Total do Pedido (R$)</label>
+                    <input type="number" id="total" step="0.01" placeholder="0.00">
+                </div>
+
+                <div>
+                    <label for="dataPedido">Data do Pedido</label>
+                    <input type="date" id="dataPedido">
+                </div>
+
+                <div>
+                    <label for="mesa">Mesa</label>
+                    <input type="text" id="mesa" placeholder="Ex: 07">
+                </div>
+
+                <div class="full-width">
+                    <label for="itens">Itens do Pedido</label>
+                    <textarea id="itens" placeholder="Ex: 1x Lasanha, 2x Suco"></textarea>
+                </div>
+
+                 <div class="full-width">
+                    <label for="observacoes">Observacoes</label>
+                    <textarea id="observacoes" placeholder="Observacoes do pedido"></textarea>
+                </div>
+
+                <div class="acoes full-width acoes">
+                    <button type="submit" class="btn-primary">Salvar Alteracao</button>
+                    <a href="pedidos.html" class="btn-secondary">Cancelar</a>
+                </div>
+            </form>
+            <div id="mensagem" class="mensagem"></div>
+        </section>
+    </div>
+
+    <script>
+        const parametros = new URLSearchParams(window.location.search);
+        const idPedido = parametros.get('id') || '';
+        document.getElementById('pedidoId').value = idPedido;
+
+        async function carregarPedido() {
+            const mensagem = document.getElementById('mensagem');
+            if (!idPedido) {
+                mensagem.className = 'mensagem erro';
+                mensagem.textContent = 'ID do pedido nao informado.';
+                return;
+            }
+            try {
+                const response = await fetch(`http://localhost:3000/pedidos/${encodeURIComponent(idPedido)}`);
+                const pedido = await response.json();
+                if (!response.ok) {
+                    throw new Error(pedido.erro || 'Erro ao buscar pedido.');
+                }
+                document.getElementById('cliente').value = pedido.cliente || '';
+                document.getElementById('status').value = pedido.status || 'em preparo';
+                document.getElementById('total').value = pedido.total || '';
+                document.getElementById('dataPedido').value = pedido.dataPedido || '';
+                document.getElementById('mesa').value = pedido.mesa || '';
+                document.getElementById('itens').value = pedido.itens || '';
+                document.getElementById('observacoes').value = pedido.observacoes || '';
+            } catch (erro) {
+                mensagem.className = 'mensagem erro';
+                mensagem.textContent = erro.message || 'Nao foi possivel carregar o pedido.';
+            }
+        }
+        document.getElementById('formAlterarPedido').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const mensagem = document.getElementById('mensagem');
+            const pedidoAtualizado = {
+                cliente: document.getElementById('cliente').value.trim(),
+                status: document.getElementById('status').value,
+                total: parseFloat(document.getElementById('total').value),
+                dataPedido: document.getElementById('dataPedido').value,
+                mesa: document.getElementById('mesa').value.trim(),
+                itens: document.getElementById('itens').value.trim(),
+                observacoes: document.getElementById('observacoes').value.trim()
+            };
+            try {
+                const response = await fetch(`http://localhost:3000/pedidos/${encodeURIComponent(idPedido)}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(pedidoAtualizado)
+                });
+                const resultado = await response.json();
+                if (!response.ok) {
+                    throw new Error(resultado.erro || 'Erro ao salvar alteracao.');
+                }
+                mensagem.className = 'mensagem sucesso';
+                mensagem.textContent = 'Pedido alterado com sucesso.';
+            } catch (erro) {
+                mensagem.className = 'mensagem erro';
+                mensagem.textContent = erro.message || 'Nao foi possivel salvar a alteracao.';
+            }
+        });
+
+        carregarPedido();    
+    </script>
+</body>
+</html>
