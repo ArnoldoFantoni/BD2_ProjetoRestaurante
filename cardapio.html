@@ -127,8 +127,25 @@
             min-width: 220px;
             background: white;
         }
+        .btn-edit {
+            display: inline-block;
+            margin-top: 15px;
+            background-color: var(--white);
+            color: var(--accent-red);
+            border: 1px solid var(--accent-red);
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
 
-        
+        .btn-edit:hover {
+            background-color: var(--accent-red);
+            color: var(--white);
+        }
+            
     </style>
 </head>
 <body>
@@ -149,6 +166,10 @@
             <option value="sobremesa">Sobremesa</option>
             <option value="bebida">Bebida</option>
         </select>
+
+        <label for="nomePrato">Buscae por prato / bebida</label>
+        <!-- <input type="text" class="filter-select" id="nomePrato" placeholder="Ex: Macarronada" required> -->
+        <input type="text" class="filter-select" id="nomePrato" placeholder="Ex: Macarronada" required oninput="buscarCardapio()">
     </div>
     
     <div class="cardapio-grid" id="menuContainer">
@@ -157,11 +178,26 @@
 
     <script>
         async function buscarCardapio() {
+            console.log("entrou em buscarCardapio()");
             try {
                 const tipoSelecionado = document.getElementById('filtroTipo').value;
+                const nomePrato = document.getElementById('nomePrato').value;
 
-                const rota = tipoSelecionado
-                    ? `http://localhost:3000/cardapio-completo?tipo=${encodeURIComponent(tipoSelecionado)}`
+                //-- adionando os filtros em um objeto parametros
+                const parametros = new URLSearchParams();
+
+                if(tipoSelecionado){
+                    parametros.append('tipo', tipoSelecionado);
+                }
+                if(nomePrato){
+                    parametros.append('nome', nomePrato);
+                }
+
+                //-- para os parameteos para uma estring
+                const queryString = parametros.toString();
+
+                const rota = queryString
+                    ? `http://localhost:3000/cardapio-completo?${queryString}`
                     : 'http://localhost:3000/cardapio-completo';
 
                 const response = await fetch(rota);
@@ -176,13 +212,20 @@
                 }
 
                 pratos.forEach(prato => {
+                    const linkEdicao = `alterar-prato.html?nome=${encodeURIComponent(prato.nome)}`;
+
                     const card = `
                         <div class="item-card">
                             <span class="category-badge">${prato.tipo}</span>
                             <h3>${prato.nome}</h3>
                             <p>${prato.descricao || 'Sem descrição disponível.'}</p>
                             <span class="price-tag">R$ ${parseFloat(prato.preco).toFixed(2)}</span>
+                            
+                            <a href="${linkEdicao}" class="btn-edit">
+                                <span>✏️ Editar Item</span>
+                            </a>
                         </div>
+
                     `;
                     container.innerHTML += card;
                 });

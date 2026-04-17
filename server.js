@@ -55,9 +55,13 @@ async function main() {
                 if (req.query.tipo) {
                     filtro.tipo = req.query.tipo;
                 }
+                if(req.query.nome){
+                    filtro.nome = { $regex: req.query.nome, $options: 'i' };
+                }
             
                 const itens = await db.collection('cardapio').find(filtro).toArray();
                 res.json(itens);
+                
             } catch (err) {
                 res.status(500).json({ erro: "Erro ao buscar cardápio" });
             }
