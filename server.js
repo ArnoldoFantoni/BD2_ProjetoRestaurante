@@ -67,6 +67,43 @@ async function main() {
             }
         });
 
+        //ROTA PARA BUSCAR O DETERMINADO PRATO PARA ALTERAR.
+        app.get('/cardapio-completo/:nome', async (req, res) =>{
+            try{
+                const prato = await cardapio.findOne({nome: req.params.nome});
+
+                if(!prato){
+                    return res.status(404).json({erro: "Prato não encontrado!"});
+                }
+                
+                res.json(prato);
+            }catch(err){
+                res.status(500).json({erro: "Erro ao buscar card[apio"});
+            }
+        });
+
+        // ROTA PARA ALTERAR ITEM DO CARDÁPIO
+        app.put('/cardapio/:nomeAntigo', async (req, res) => {
+            try {
+                const nomeParaBuscar = req.params.nomeAntigo;
+                const novosDados = req.body;
+
+                // Procurar pelo nome antigo e aplicar os novos dados
+                const result = await db.collection('cardapio').updateOne(
+                    { nome: nomeParaBuscar }, // Filtro para achar o prato
+                    { $set: novosDados }      // O que será alterado
+                );
+
+                if (result.matchedCount === 0) {
+                    return res.status(404).json({ erro: "Prato não encontrado para alteração." });
+                }
+
+                res.json({ mensagem: "Prato alterado com sucesso!" });
+            } catch (err) {
+                res.status(500).json({ erro: "Erro ao alterar prato no banco de dados." });
+            }
+        });
+
         app.get('/pedidos/:id', async (req, res) => {
             try {
                 const pedido = await pedidos.findOne({ idPedido: req.params.id });

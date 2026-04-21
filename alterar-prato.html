@@ -102,7 +102,7 @@
     <div class="card">
         <h2>Alterar Item</h2>
         
-        <form id="formPrato">
+        <form id="formAlterarPrato">
             <div class="form-group">
                 <label for="nome">Nome do Prato</label>
                 <input type="text" id="nome" placeholder="Ex: Risoto de Alho Poró" required>
@@ -128,18 +128,18 @@
                 <textarea id="descricao" rows="3" placeholder="Ingredientes ou detalhes..."></textarea>
             </div>
 
-            <button type="submit">Cadastrar Prato</button>
+            <button type="button" onclick="alterarPrato()">Editar Prato</button>
         </form>
 
-        <a href="menu.html" class="back-link">← Voltar o Menu</a>
+        <a href="cardapio.html" class="back-link">← Voltar o cardapio</a>
     </div>
 
     <script>
-        // Esta parte será conectada ao seu server.js depois
-        document.getElementById('formPrato').addEventListener('submit', async function(e) {
-            e.preventDefault(); // Impede a página de recarregar
+        async function alterarPrato(){
+            const urlParams = new URLSearchParams(window.location.search);
+            const nomePratoOriginal = urlParams.get('nome');
 
-            // 1. Captura os valores dos campos do formulário
+            //Captura os valores dos campos do formulário
             const pratoData = {
                 nome: document.getElementById('nome').value,
                 tipo: document.getElementById('tipo').value,
@@ -149,8 +149,8 @@
 
             try {
                 // 2. Faz a chamada para o servidor Node.js
-                const response = await fetch('http://localhost:3000/cardapio', {
-                    method: 'POST',
+                const response = await fetch(`http://localhost:3000/cardapio/${encodeURIComponent(nomePratoOriginal)}`, {
+                    method: 'put',
                     headers: {
                         'Content-Type': 'application/json'
                     },
@@ -161,17 +161,46 @@
 
                 // 3. Verifica se deu certo
                 if (response.ok) {
-                    alert('✅ Prato cadastrado com sucesso no MongoDB!');
-                    document.getElementById('formPrato').reset(); // Limpa o formulário
+                    alert('Prato alterado com sucesso no MongoDB!');
+                    window.location.href = 'cardapio.html'; // Redireciona de volta para o cardápio
                 } else {
-                    alert('❌ Erro ao cadastrar: ' + resultado.erro);
+                    alert('Erro ao cadastrar: ' + resultado.erro);
                 }
 
             } catch (erro) {
                 console.error('Erro na requisição:', erro);
-                alert('❌ Não foi possível conectar ao servidor. Verifique se o server.js está rodando. > ' + erro);
+                alert('Não foi possível conectar ao servidor. Verifique se o server.js está rodando. > ' + erro);
             }
-        });
+        }
+
+        async function buscarPrato(){
+            // 1. Pega o parâmetro 'nome' da URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const nomeDoPrato = urlParams.get('nome');
+
+            if(!nomeDoPrato){
+                alert("Nenhum prato foi selecionado!");
+            }
+
+            try{
+                const response = await fetch(`http://localhost:3000/cardapio-completo?nome=${encodeURIComponent(nomeDoPrato)}`);
+                const pratos = await response.json();
+
+                if(pratos.length > 0){
+                    const prato = pratos[0];
+                    console.log("Dados recebidos do banco:", prato);
+
+                    document.getElementById('nome').value = prato.nome;
+                    document.getElementById('tipo').value = prato.tipo;
+                    document.getElementById('preco').value = prato.preco;
+                    document.getElementById('descricao').value = prato.descricao;
+                }
+            }catch(erro){
+                console.error("Erro ao buscar dados do prato: ", erro);
+            }
+        }
+
+        buscarPrato();
     </script>
 
 </body>
