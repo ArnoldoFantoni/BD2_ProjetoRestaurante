@@ -145,6 +145,26 @@
             background-color: var(--accent-red);
             color: var(--white);
         }
+
+        .btn-delete {
+            display: inline-block;
+            margin-top: 15px;
+            background-color: var(--white);
+            color: #e74c3c; /* Vermelho mais forte */
+            border: 1px solid #e74c3c;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin-left: 5px; /* Espaço entre editar e excluir */
+        }
+
+        .btn-delete:hover {
+            background-color: #e74c3c;
+            color: var(--white);
+        }
             
     </style>
 </head>
@@ -221,8 +241,12 @@
                             <span class="price-tag">R$ ${parseFloat(prato.preco).toFixed(2)}</span>
                             
                             <a href="${linkEdicao}" class="btn-edit">
-                                <span>✏️ Editar Item</span>
+                                <span>Editar Item</span>
                             </a>
+
+                            <button class="btn-delete" onclick="excluirPrato('${prato.nome}')">
+                                Excluir
+                            </button>
                         </div>
 
                     `;
@@ -236,6 +260,30 @@
 
         function filtrarPorTipo() {
             buscarCardapio();
+        }
+
+        async function excluirPrato(nome) {
+            // Pergunta se o usuário tem certeza
+            if (!confirm(`Tem certeza que deseja excluir o prato "${nome}"?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:3000/cardapio/${encodeURIComponent(nome)}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert("Prato removido com sucesso!");
+                    buscarCardapio(); // Recarrega a lista para o card sumir da tela
+                } else {
+                    const erro = await response.json();
+                    alert("Erro ao excluir: " + erro.erro);
+                }
+            } catch (error) {
+                console.error("Erro na requisição de exclusão:", error);
+                alert("Erro ao conectar com o servidor.");
+            }
         }
 
         buscarCardapio();

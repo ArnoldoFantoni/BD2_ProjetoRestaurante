@@ -104,6 +104,24 @@ async function main() {
             }
         });
 
+        // ROTA PARA EXCLUIR ITEM DO CARDÁPIO
+        app.delete('/cardapio/:nome', async (req, res) => {
+            console.log("Recebi uma tentativa de exclusão para:", req.params.nome); // ADICIONE ISSO
+            try {
+                const nomeParaExcluir = req.params.nome;
+                const resultado = await cardapio.deleteOne({ nome: nomeParaExcluir });
+
+                if (resultado.deletedCount === 0) {
+                    return res.status(404).json({ erro: "Prato não encontrado." });
+                }
+
+                res.json({ mensagem: "Prato excluído com sucesso!" });
+            } catch (err) {
+                console.error("Erro interno:", err); // ADICIONE ISSO
+                res.status(500).json({ erro: "Erro ao excluir no banco de dados." });
+            }
+        });
+
         app.get('/pedidos/:id', async (req, res) => {
             try {
                 const pedido = await pedidos.findOne({ idPedido: req.params.id });
