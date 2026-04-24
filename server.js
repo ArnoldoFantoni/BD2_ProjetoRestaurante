@@ -106,7 +106,6 @@ async function main() {
 
         // ROTA PARA EXCLUIR ITEM DO CARDÁPIO
         app.delete('/cardapio/:nome', async (req, res) => {
-            console.log("Recebi uma tentativa de exclusão para:", req.params.nome); // ADICIONE ISSO
             try {
                 const nomeParaExcluir = req.params.nome;
                 const resultado = await cardapio.deleteOne({ nome: nomeParaExcluir });
