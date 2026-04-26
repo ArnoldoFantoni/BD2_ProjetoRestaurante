@@ -1,11 +1,12 @@
-const express = require('express');
-const { MongoClient } = require('mongodb');
+const express = require('express'); //cria o servidor e as rotas da API
+const { MongoClient } = require('mongodb'); //conecta o node ao banco
 const cors = require('cors');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
+//conexao com o banco
 const uri = "mongodb://127.0.0.1:27017";
 const client = new MongoClient(uri);
 const dbName = "restaurante"; // O nome do banco
@@ -52,13 +53,14 @@ async function main() {
             try {
                 const filtro = {};
             
+                //Busca pratos por um determinado TIPo
                 if (req.query.tipo) {
                     filtro.tipo = req.query.tipo;
                 }
                 if(req.query.nome){
                     filtro.nome = { $regex: req.query.nome, $options: 'i' };
                 }
-            
+                                                            //busca pelo filtro
                 const itens = await db.collection('cardapio').find(filtro).toArray();
                 res.json(itens);
                 
@@ -107,6 +109,7 @@ async function main() {
         // ROTA PARA EXCLUIR ITEM DO CARDÁPIO
         app.delete('/cardapio/:nome', async (req, res) => {
             try {
+                //busca o prato para excluir e se encnontrado é excluido
                 const nomeParaExcluir = req.params.nome;
                 const resultado = await cardapio.deleteOne({ nome: nomeParaExcluir });
 
@@ -152,6 +155,7 @@ async function main() {
                     return res.status(400).json({ erro: "Preencha os campos obrigatorios do pedido." });
                 }
 
+                //substitui/altera um documento inteiro por um novo
                 const result = await pedidos.replaceOne(
                     { idPedido: req.params.id },
                     pedidoAtualizado
@@ -192,6 +196,7 @@ async function main() {
 
         app.get('/pedidos-total-por-cliente', async (req, res) => {
             try {
+                //agrupa pedido por cliente e soma
                 const totais = await pedidos.aggregate([
                     {
                         $group: {
